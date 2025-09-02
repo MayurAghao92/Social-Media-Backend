@@ -1,5 +1,6 @@
 import userModel from "../models/user.model.js";
 import jwt from "jsonwebtoken";
+import bcrypt from "bcryptjs";
 
 async function registerController(req, res) {
   const { username, password } = req.body;
@@ -15,7 +16,7 @@ async function registerController(req, res) {
 
   const newUser = await userModel.create({
     username,
-    password,
+    password:await bcrypt.hash(password,10),
   });
 
   const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET);
@@ -60,4 +61,4 @@ async function loginController(req, res) {
      })
 }
 
-export default { registerController, loginController };
+export  { registerController, loginController };
