@@ -42,7 +42,7 @@ async function loginController(req, res) {
     });
   }
 
-  const isPasswordValid = user.password === password;
+  const isPasswordValid = await bcrypt.compare(password,user.password);
 
   if (!isPasswordValid) {
     return res.status(401).json({
