@@ -7,13 +7,18 @@ const imagekit = new ImageKit({
     urlEndpoint : process.env.IMAGEKIT_URL_ENDPOINT,
 });
 
-async function uploadImage(file){
-    const response=await imagekit.upload({
-        file:file,
-        filename:filename
-    })
+async function uploadFile(file,filename){
+     try {
+    const response = await imagekit.upload({
+      file: file,         
+      fileName: filename,
+      folder: "Social-Media",
+    });
 
     return response;
+  } catch (err) {
+    console.error(" ImageKit upload failed:", err.message);
+  }
 }
 
-export default uploadImage;
+export default uploadFile;
