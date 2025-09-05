@@ -68,4 +68,14 @@ async function logoutController(req, res) {
   });
 }
 
-export  { registerController, loginController, logoutController };
+async function getProfileController(req, res){
+  res.status(200).json({
+    user: {
+      id: req.user._id,
+      username: req.user.username,
+      _id: req.user._id, 
+    }
+  });
+}
+
+export  { registerController, loginController, logoutController,getProfileController };
