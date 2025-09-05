@@ -16,12 +16,18 @@ async function registerController(req, res) {
 
   const newUser = await userModel.create({
     username,
-    password:await bcrypt.hash(password,10),
+    password: await bcrypt.hash(password, 10),
   });
 
   const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET);
 
-  res.cookie("token", token);
+  res.cookie("token", token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production', // true in production
+    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+    domain: process.env.NODE_ENV === 'production' ? '.vercel.app' : undefined
+  });
 
   res.status(201).json({
     message: "User registered successfully",
@@ -42,7 +48,7 @@ async function loginController(req, res) {
     });
   }
 
-  const isPasswordValid = await bcrypt.compare(password,user.password);
+  const isPasswordValid = await bcrypt.compare(password, user.password);
 
   if (!isPasswordValid) {
     return res.status(401).json({
@@ -50,15 +56,21 @@ async function loginController(req, res) {
     });
   }
 
-  const token= jwt.sign({id:user._id},process.env.JWT_SECRET);
-    res.cookie("token",token);
-    res.status(200).json({ 
-        message: "Login Successful",
-        user:{
-            id:user._id,
-            username:user.username,
-        },
-     })
+  const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
+  res.cookie("token", token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production", // true in production
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+    domain: process.env.NODE_ENV === "production" ? ".vercel.app" : undefined,
+  });
+  res.status(200).json({
+    message: "Login Successful",
+    user: {
+      id: user._id,
+      username: user.username,
+    },
+  });
 }
 
 async function logoutController(req, res) {
@@ -68,14 +80,19 @@ async function logoutController(req, res) {
   });
 }
 
-async function getProfileController(req, res){
+async function getProfileController(req, res) {
   res.status(200).json({
     user: {
       id: req.user._id,
       username: req.user.username,
-      _id: req.user._id, 
-    }
+      _id: req.user._id,
+    },
   });
 }
 
-export  { registerController, loginController, logoutController,getProfileController };
+export {
+  registerController,
+  loginController,
+  logoutController,
+  getProfileController,
+};
