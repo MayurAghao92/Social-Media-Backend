@@ -10,7 +10,9 @@ const postSchema = new mongoose.Schema({
   createdAt:{
     type:Date,
     default:Date.now,
-  }
+  },
+  likes: [{ type: mongoose.Schema.Types.ObjectId, ref: "users" }]
+
 });
 
 const postModel = mongoose.model("posts", postSchema);

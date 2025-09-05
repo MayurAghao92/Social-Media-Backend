@@ -62,7 +62,7 @@ async function loginController(req, res) {
 }
 
 async function logoutController(req, res) {
-  res.clearCookie("token"); // clears the JWT cookie
+  res.clearCookie("token");
   res.status(200).json({
     message: "Logged out successfully",
   });
